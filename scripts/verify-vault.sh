@@ -4,7 +4,7 @@
 # Answers three questions no policy document can answer on its own:
 #   1. Is the portable enforcement layer actually armed?
 #   2. Has tracked evidence under raw/ been altered?
-#   3. Does the vault pass structural lint?
+#   3. Does the vault pass structural lint, schema, OKF, and benchmark-integrity checks?
 #
 # Usage: bash scripts/verify-vault.sh
 # Exit:  0 all clear, 1 findings. Safe to run at any time; writes nothing.
@@ -232,6 +232,27 @@ if [ -f scripts/lint-governance.sh ]; then
   fi
 else
   note "scripts/lint-governance.sh not found — skipping"
+fi
+
+# --- 10. retrieval benchmark integrity (Phase 5) --------------------------
+# Gating, not advisory — and the distinction is the one section 9 explains. A governance finding is
+# a question about meaning; this is a broken reference, the same class as the broken-link check
+# that already gates in section 3. A benchmark expecting a page that no longer exists reports a
+# retrieval failure that is really a benchmark defect, and that misdiagnosis is worse than a loud
+# failure the day the page is renamed. Validation only: no retrieval is run here, so this stays
+# fast enough to belong in every verification.
+echo
+echo "-- retrieval benchmark integrity --"
+if [ -f scripts/retrieval-bench.sh ]; then
+  if bench_out=$(bash scripts/retrieval-bench.sh --validate 2>&1); then
+    pass "$(printf '%s' "$bench_out" | head -1)"
+  else
+    fail "the retrieval benchmark no longer matches the vault:"
+    printf '%s\n' "$bench_out" | grep -vE '^$' | sed 's/^/      /'
+    note "fix docs/phase-5/query-benchmark.md — a stale benchmark measures the wrong thing"
+  fi
+else
+  note "scripts/retrieval-bench.sh not found — skipping"
 fi
 
 echo

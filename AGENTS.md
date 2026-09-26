@@ -3,10 +3,11 @@
 Canonical, agent-neutral operating policy for the LLM Wiki + OKF pilot vault. This file is the
 single source of truth for *what the rules are*. Read it before any write operation.
 
-Phase: **4 (lint, governance, and maintenance)**. Automation level: **2** — the agent proposes
-plans and executes approved ones. Phase 4's plan allows level 3, and this vault has deliberately
-not taken it: no auto-fix is enabled, only documented as eligible. See
-[docs/phase-4/lint-layers.md](docs/phase-4/lint-layers.md#42-fix-policy-by-finding-type).
+Phase: **5 (retrieval optimization)**. Automation level: **2** — the agent proposes plans and
+executes approved ones. Phases 4 and 5 both allow level 3, and this vault has deliberately taken
+neither: no auto-fix is enabled, only documented as eligible, and retrieval is measured rather than
+re-tooled. See [docs/phase-4/lint-layers.md](docs/phase-4/lint-layers.md#42-fix-policy-by-finding-type)
+and [docs/phase-5/status.md](docs/phase-5/status.md).
 
 Read [docs/phase-0/risk-matrix.md](docs/phase-0/risk-matrix.md) before any write operation and
 [docs/phase-0/privacy-policy.md](docs/phase-0/privacy-policy.md) before handling any source.
@@ -19,6 +20,11 @@ fields are agent-editable.
 Read [docs/phase-4/lint-layers.md](docs/phase-4/lint-layers.md) before acting on any lint finding —
 it says which findings the agent may fix after approval, which are owner-only, and which are never
 fixed automatically at any automation level.
+Read [docs/phase-5/retrieval-stages.md](docs/phase-5/retrieval-stages.md) before proposing any
+retrieval tooling — an index, a metadata query engine, embeddings. Each stage has a named trigger,
+and "the benchmark numbers could be better" is not one of them. Editing
+`docs/phase-5/query-benchmark.md` to make a measurement look better is the same class of act as
+editing a page to silence a lint finding.
 
 > **If you are Claude Code:** `CLAUDE.md` is your entry point, and it is a pointer — it imports
 > this file with `@AGENTS.md` and states no rules of its own. There is one copy of the policy, so

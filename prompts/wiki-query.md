@@ -12,12 +12,30 @@ base.
 
 ## Retrieval order
 
+Fall through it in order. Stop as soon as the answer is grounded — the order is a fallback chain,
+not a checklist to complete.
+
 1. `wiki/index.md` — start here, always
 2. Follow wikilinks from whatever the index points at
-3. Search the Wiki for terms from the question
-4. Read a small number of the best candidates, not everything that matched
-5. Expand into `raw/` only when the Wiki is insufficient, or a critical claim needs verification
+3. Filter on frontmatter when the question is about metadata rather than content
+   (`knowledge_status`, `status`, `review_date`, `type`) — `grep` on the field. There is no query
+   engine; Stage C in [docs/phase-5/retrieval-stages.md](../docs/phase-5/retrieval-stages.md) says
+   why not, and what would justify one.
+4. Search the Wiki full-text for terms from the question, including `aliases`
+5. Semantic retrieval — **not available in this vault.** No embeddings, no vector index, by an
+   accepted decision. When steps 1-4 come up short, the answer is "the vault does not know" plus
+   the source that would settle it. It is never the model's own knowledge dressed as a recorded
+   claim; that failure is invisible in every benchmark score, which is why it is named here.
+6. Read a small number of the best candidates, not everything that matched
+7. Expand into `raw/` only when the Wiki is insufficient, or a critical claim needs verification
    against original evidence
+8. Answer with citations
+
+If a question needed step 4 or later, say so — a query that routes through the index and links
+alone is the retrieval approach working, and one that repeatedly falls to full-text search is the
+signal [docs/phase-5/retrieval-stages.md](../docs/phase-5/retrieval-stages.md) measures. Repeated
+failures that naming and index fixes do not resolve are the documented trigger for reviewing the
+retrieval decision, so they are worth reporting rather than absorbing.
 
 Create no files.
 

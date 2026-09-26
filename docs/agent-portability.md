@@ -289,15 +289,18 @@ prompts/wiki-{ingest,query,lint,find-duplicates,trace}.md   canonical, single-so
                                    find-duplicates/trace born as pointers in Phase 2)
 scripts/guard-raw-universal.sh     reusable pre-tool guard core
 scripts/verify-vault.sh            agent-independent verification + content-drift check
-                                   (10 printed sections since Phase 4 added the governance one)
+                                   (11 printed sections since Phase 5 added benchmark integrity)
 scripts/lint-governance.sh         OKF + cross-layer governance lint (Phase 4; advisory, read-only)
 scripts/test-lint-governance.sh    20 checks for the above, incl. a documentation-coverage check
+scripts/retrieval-bench.sh         retrieval benchmark (Phase 5; read-only, gates on its own integrity)
+scripts/test-retrieval-bench.sh    14 checks for the above, incl. --validate against the live vault
 scripts/lock-raw.sh                OS-level chmod 444 lock for tracked raw/ files
 scripts/lib-vault.sh               added recorded_source_id() helper, shared by the two above
 scripts/check-policy-sync.sh       pointer-integrity + canonical-completeness check (CLAUDE.md -> AGENTS.md)
 scripts/check-command-pointers.sh  command-pointer drift detector (commands vs prompts)
 .github/workflows/verify-vault.yml server-side verify-vault.sh run (reports; does not gate)
 scripts/test-portability.sh        self-check for all of the above, 42 checks
+                                   (all six suites together: 118 checks)
 docs/agent-portability.md          this file
 error-tracking/                    Antigravity test prompts and reports, 7 rounds (round 1
                                    produced no report), plus the structural-gap triage

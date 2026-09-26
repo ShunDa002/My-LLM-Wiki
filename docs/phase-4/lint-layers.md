@@ -167,10 +167,16 @@ cannot be recovered retrospectively.
 bash scripts/test-portability.sh scripts/test-schema.sh   # (run each; both must pass)
 bash scripts/check-policy-sync.sh
 bash scripts/lock-raw.sh && bash scripts/verify-vault.sh  # recovery + lock drill
+bash scripts/retrieval-bench.sh                           # retrieval performance (Phase 5)
 ```
 
 Review: schema complexity (is any approved field unused?), retrieval performance, privacy
 classifications, the Git recovery checklist, and whether the automation level should move.
+
+"Retrieval performance" stopped being a judgement call in Phase 5: record the benchmark run in
+[phase-5/benchmark-results.md](../phase-5/benchmark-results.md), including the human columns no
+script can fill, and check the numbers against the stage triggers in
+[phase-5/retrieval-stages.md](../phase-5/retrieval-stages.md) before proposing any new tooling.
 
 ## 4.4 Graph view as quality evidence
 

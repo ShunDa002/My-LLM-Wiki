@@ -4,9 +4,10 @@ An Obsidian vault where captured sources become compiled knowledge (`wiki/`), an
 informs execution (`okf/`). Built in phases from
 [LLM-Wiki-and-OKF-Implementation-Plan.md](LLM-Wiki-and-OKF-Implementation-Plan.md).
 
-**Current phase: 2 — schema stabilization and quality control. Automation level 2.**
-Phases 0 (controls and baseline) and 1 (MVP closed loop) are complete. The agent proposes plans and
-executes approved ones; high-risk operations stay human-only for the whole roadmap.
+**Current phase: 5 — retrieval optimization. Automation level 2.**
+Phases 0 through 4 are complete. The agent proposes plans and executes approved ones; high-risk
+operations stay human-only for the whole roadmap. Phases 4 and 5 both permit level 3 and this vault
+has taken neither: no auto-fix is enabled, and retrieval is measured rather than re-tooled.
 
 ## Layout
 
@@ -67,11 +68,15 @@ bash scripts/verify-vault.sh            # everything: enforcement, evidence, lin
 bash scripts/wiki-lint.sh               # page-level structural findings
 bash scripts/check-schema.sh            # frontmatter conformance against the approved schema
 bash scripts/find-duplicates.sh "Title" # check a title before creating the page
+bash scripts/lint-governance.sh         # OKF + cross-layer findings (advisory)
+bash scripts/retrieval-bench.sh         # retrieval benchmark: recall, precision, read cost
 bash scripts/baseline-metrics.sh        # vault health counts
 
 bash scripts/test-schema.sh             # self-checks: each plants defects and asserts they are found
 bash scripts/test-wiki-lint.sh
 bash scripts/test-portability.sh
+bash scripts/test-lint-governance.sh
+bash scripts/test-retrieval-bench.sh
 bash scripts/test-baseline-metrics.sh
 ```
 
@@ -82,7 +87,10 @@ bash scripts/test-baseline-metrics.sh
 | 0 — controls and baseline | Complete (4 of 5 exit criteria; the fifth is an owner sign-off) | [docs/phase-0/phase-0-report.md](docs/phase-0/phase-0-report.md) |
 | 1 — MVP closed loop | Complete, 7 sources ingested individually | [docs/phase-1/status.md](docs/phase-1/status.md) |
 | 2 — schema stabilization | Machinery complete; 2 exit criteria need the owner | [docs/phase-2/status.md](docs/phase-2/status.md) |
-| Agent portability | Added and adversarially tested | [docs/agent-portability.md](docs/agent-portability.md) |
+| 3 — OKF bridge | Complete, 5 of 6 exit criteria | [docs/phase-3/status.md](docs/phase-3/status.md) |
+| 4 — lint and governance | Complete; lint precision and review time need the owner | [docs/phase-4/status.md](docs/phase-4/status.md) |
+| 5 — retrieval optimization | Benchmark established and measured; no new tooling installed, by design | [docs/phase-5/status.md](docs/phase-5/status.md) |
+| Agent portability | Added and adversarially tested over seven rounds | [docs/agent-portability.md](docs/agent-portability.md) |
 
 Start here for the whole story: [docs/session-summary.md](docs/session-summary.md).
 Before creating any page: [docs/phase-2/page-taxonomy.md](docs/phase-2/page-taxonomy.md).

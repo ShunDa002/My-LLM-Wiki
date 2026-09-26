@@ -1,4 +1,4 @@
-# Session summary: Phase 0 to Phase 4, agent portability, and Antigravity boundary testing
+# Session summary: Phase 0 to Phase 5, agent portability, and Antigravity boundary testing
 
 Date: 2026-08-24 to 2026-08-31
 Vault: `/c/Data/llm-wiki3`
@@ -547,23 +547,27 @@ Full table: [phase-3/status.md](phase-3/status.md#exit-criteria).
 | 2 | Schema stabilization | 4 met, 1 met at current scale, 2 open | 20 sources (7 ingested); reviewer confirmation |
 | 3 | OKF bridge | **5 of 6 met** | 3 syntheses linked to OKF (1 exists) |
 | 4 | Lint and governance | **4 of 6 met, 1 half met, 1 needs the owner** | human review time unrecorded; reviewer confirmation of lint precision (a second agent has now reached the same precision verdict) |
-| 5–7 | Retrieval, automation, high automation | not started | correct, gated on earlier exits |
+| 5 | Retrieval optimization | **4 met, 1 half met, 1 not applicable by design** | no retrieval budget agreed; the human half of the benchmark unrun |
+| 6–7 | Automation, high automation | not started | correct, gated on earlier exits |
 
-Content: 4 concepts, 7 sources, 1 synthesis, 1 question, 3 OKF records, 17 logged operations, 7
-index links. Machinery: 17 scripts, 8 single-sourced workflows, 6 entry-point files, **104 automated
-checks** all passing (portability 42, schema 23, governance 20, lint 11, metrics 8) — the
-governance suite gained its 20th check in round 7.
-`verify-vault.sh`: all clear, now 11 sections. Evidence: 19 tracked files under `raw/`, all
-read-only, **12 of them uningested**.
+Content: 4 concepts, 7 sources, 1 synthesis, 1 question, 3 OKF records, 18 logged operations, 7
+index links. Machinery: 19 scripts, 8 single-sourced workflows, 6 entry-point files, **118 automated
+checks** all passing (portability 42, schema 23, governance 20, retrieval 14, lint 11, metrics 8) —
+the retrieval suite is new in Phase 5.
+`verify-vault.sh`: all clear, 11 printed sections. Evidence: 19 tracked files under the evidence
+directory, all read-only, **12 of them uningested**.
 
 **One constraint wearing three hats.** Phase 2's twenty-source criterion, Phase 3's three-synthesis
 criterion, and Phase 2's "a duplicate rate measured over 6 pages is not evidence" all resolve the
 same way: more ingested sources. The supply problem is over — 12 files sit in `raw/` — so what
 remains is the scope decision in open item 2, not a shortage of material.
 
-**Phase 4 was startable without waiting for that, and is now built** — see §9 below. Its exit
-criteria turn on lint precision, auto-fix policy, and traceability rather than source count, which
-is why it could proceed while the source-count criteria stay open.
+**Phases 4 and 5 were startable without waiting for that, and are now built** — see §9 and §10
+below. Their exit criteria turn on lint precision, auto-fix policy, traceability, and benchmark
+measurement rather than source count, which is why they could proceed while the source-count
+criteria stay open. Phase 5 does add a reason to settle the scope question, though: a benchmark can
+only measure the corpus it was written against, so 12 uningested files are 12 files retrieval
+quality says nothing about.
 
 ---
 
@@ -658,6 +662,85 @@ eligibility is the exit criterion; flipping the switch is not.
 
 ---
 
+## 10. Phase 5 — retrieval optimization (2026-08-31)
+
+Objective: "improve retrieval only after the Markdown-first solution reaches measured limits."
+Read literally that objective is mostly a *prohibition*, so the deliverable is the measurement that
+decides whether tooling is warranted — plus a named trigger per stage, so the decision is not made
+by enthusiasm. **Nothing was installed.** Full detail: [phase-5/status.md](phase-5/status.md),
+[phase-5/query-benchmark.md](phase-5/query-benchmark.md),
+[phase-5/retrieval-stages.md](phase-5/retrieval-stages.md),
+[phase-5/benchmark-results.md](phase-5/benchmark-results.md).
+
+### What was built
+
+- `docs/phase-5/query-benchmark.md` — 24 questions, three in each of the plan's eight categories, in
+  the plan's own field shape and machine-parsed. 24 rather than 50 because the vault holds 16
+  retrievable pages: fifty questions over sixteen pages measures the question writer, not retrieval.
+  Two questions (`Q23`, `Q24`) are unanswerable **on purpose** and must stay that way.
+- `scripts/retrieval-bench.sh` — read-only. recall@N, R-precision, pages-read-to-cover, per-question
+  latency, and a `--validate` mode that checks the benchmark against the vault without retrieving
+  anything.
+- `docs/phase-5/retrieval-stages.md` — which of the plan's nine §5.2 metrics a script can measure
+  (four) and which need a human (five); the Stage A–D ladder with a checkable trigger and a cheaper
+  first remedy per stage; and the §5.4 fallback order **mapped, not restated** — the operative order
+  lives in `prompts/wiki-query.md`, which grew from 5 steps to the plan's 8.
+- `verify-vault.sh` section 10, which **gates** rather than advises. That is the opposite of the
+  Phase 4 governance section and for a reason worth keeping: a benchmark expecting a page that no
+  longer exists is a broken reference, not a question about meaning, and the failure it produces is
+  a misdiagnosis — next quarter's run reports a retrieval regression that is really a stale
+  benchmark.
+
+### What the first baseline run actually found
+
+Full `recall@5`: **18 of 22 scored questions (82%)**. The read-budget sweep is the one
+baseline-versus-alternative comparison this phase can honestly make, and it is a real one: 68% at 3
+pages read per question, 82% at 5, 91% at 10 — three questions converted for thirteen extra reads,
+then two for fifteen. The default of 5 sits at the knee.
+
+Both remaining misses at **every** budget trace to one page: the retrieval synthesis. Diagnosed
+rather than guessed — of `Q13`'s eight significant terms it contains two, and never uses `decision`,
+`basis`, `accepted`, `approach`, or `initial`. So the vault's most load-bearing conclusion is
+lexically unreachable in decision vocabulary and depends entirely on `knowledge_basis` links and the
+index. That is the **terminology-mismatch** class the pilot's own experiment already recorded, with
+the same recommended fix (add an alias) — and explicitly not a Stage B trigger.
+
+**The fix was proposed, not applied.** Editing the vault to flatter its own first baseline would
+destroy the point of having a baseline. It is open item 2 in the phase status.
+
+A third finding worth keeping: the two deliberately unanswerable questions matched 12 and 13 pages,
+and their top hits look plausible and are wrong. Lexical retrieval offers no signal at all that a
+question is unanswerable, so every defence against a confident wrong answer sits in the query
+workflow's rules and the reviewer — which is why the missing-evidence category stays in the
+benchmark permanently.
+
+### Verified, not asserted
+
+`scripts/test-retrieval-bench.sh` — **14 checks** in two halves. Integrity: six benchmark defects
+planted one at a time (nonexistent expected page, duplicate id, unknown category, a category with no
+question, a non-boolean flag, a benchmark under the plan's 20-question floor). Honesty: an
+unreachable page reported as a `MISS` with its name and rank rather than rounded up, an unanswerable
+question *excluded* from the aggregates rather than scored 0 or 1, `VAULT_BENCH_TOPN` genuinely
+changing the read budget, and a byte-identical vault after a run. The last check runs `--validate`
+against the real benchmark and the real vault, so a renamed `wiki/` page fails the suite instead of
+quietly degrading next quarter's measurement.
+
+All six suites pass — 118 checks. `verify-vault.sh` all clear, 11 printed sections.
+
+One real bug, found by running rather than reading: records were tab-separated, and tab is IFS
+whitespace, so bash's `read` collapsed two adjacent tabs — a question with an empty
+`expected_pages` shifted every later field left and silently emptied `must_identify_conflict`.
+Records now use `0x1f`. Same family as the Phase 0 `xargs` split and the `raw/*/*.md` glob: a parse
+that is right on the common case and wrong on the edge that matters.
+
+### Automation level stayed at 2
+
+The plan permits 3. Nothing here needs it — the benchmark is read-only, and every action it can
+recommend is either a `wiki/` write that already requires a plan or an infrastructure change that
+requires the owner.
+
+---
+
 ```
 Committed:
   6dd65a3  Phase 0: controls, scope, and baseline
@@ -684,6 +767,9 @@ Uncommitted:
   scripts/lint-governance.sh         — Phase 4 OKF + cross-layer lint (§9)
   scripts/test-lint-governance.sh    — 20 checks for the above
   docs/phase-4/                      — lint-layers, status, maintenance-log
+  scripts/retrieval-bench.sh         — Phase 5 retrieval benchmark, read-only (§10)
+  scripts/test-retrieval-bench.sh    — 14 checks for the above
+  docs/phase-5/                      — query-benchmark, retrieval-stages, benchmark-results, status
   plus this round's doc updates      — verify-vault section 9, prompts/wiki-lint.md,
                                        .claude/commands/wiki-lint.md, AGENTS.md phase 3 -> 4,
                                        wiki/log.md, phase-0-report sign-off, phase-3 status,
@@ -802,3 +888,15 @@ several documents, including commit `288d4dc`'s own message, were written before
    not a file in this repo), or move the same command to a `pre-receive` hook on a remote that
    supports one. This is the difference between a violation being *seen* and being *stopped* — the
    remaining half of gap #6.
+10. **Run the 24 benchmark questions through `/wiki-query` and fill the human columns** in
+    [phase-5/benchmark-results.md](phase-5/benchmark-results.md). Citation correctness, unsupported
+    claims, uncertainty and conflict identification (5 questions each), usefulness. The script
+    measures whether pages are *reachable*; only a reviewer measures whether answers are *good*.
+    Same shape as item 6.
+11. **Approve or decline the alias proposal** on the retrieval synthesis — the single page behind
+    both benchmark misses. A `wiki/` write, medium risk, plan-gated. Nothing was edited
+    pre-emptively, because tuning the vault to improve its own first baseline destroys the baseline.
+12. **Agree a retrieval budget**, which is what turns Phase 5's last exit criterion from *measured*
+    into *met*: proposed read budget 5 pages per question, full `recall@5` floor 80%. Two
+    consecutive runs under that floor is already the documented trigger for the next retrieval
+    stage, so agreeing the number is what makes the trigger operational.

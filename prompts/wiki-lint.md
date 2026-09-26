@@ -4,8 +4,8 @@ Agent-neutral definition. Claude Code users have `/wiki-lint`; other agents read
 
 **Minimum tools:** read files, search text, run `bash scripts/wiki-lint.sh`,
 `bash scripts/check-schema.sh`, `bash scripts/find-duplicates.sh`,
-`bash scripts/lint-governance.sh`, and `bash scripts/verify-vault.sh`. No write tools — lint never
-repairs.
+`bash scripts/lint-governance.sh`, `bash scripts/verify-vault.sh`, and — quarterly —
+`bash scripts/retrieval-bench.sh`. No write tools — lint never repairs.
 
 Lint has four layers (plan §4.1), and they differ in *consequence*, not just topic. Structural
 findings gate write work; OKF and cross-layer findings are review prompts for a human. The layer
@@ -32,6 +32,17 @@ bash scripts/check-schema.sh     # frontmatter conformance against the approved 
 bash scripts/find-duplicates.sh  # duplicate candidates (advisory — never auto-merge)
 bash scripts/lint-governance.sh  # OKF + cross-layer findings (advisory — never auto-fix)
 ```
+
+Quarterly only, with the controls review — a retrieval measurement, not a lint check:
+
+```bash
+bash scripts/retrieval-bench.sh   # recall/precision against the question benchmark; writes nothing
+```
+
+Record the run in [docs/phase-5/benchmark-results.md](../docs/phase-5/benchmark-results.md), and
+read [docs/phase-5/retrieval-stages.md](../docs/phase-5/retrieval-stages.md) before proposing any
+retrieval tooling change — every stage has a named trigger, and none of them is "the numbers could
+be better".
 
 The script covers what a script can check reliably:
 
