@@ -181,3 +181,147 @@ Format:
 - limits: Five of the plan's nine §5.2 metrics cannot be measured by a script (citation correctness, unsupported-claim rate, token cost, index-first rate, usefulness); their columns are blank rather than estimated, and filling them is owner work. No retrieval budget has ever been agreed, so the last exit criterion is measured but not met; a threshold is proposed in docs/phase-5/status.md. The lexical proxy does not weight titles and has no notion of aliases as an affordance — both stated in retrieval-stages.md §5.2, and tuning either counts as a change requiring a recorded before/after. Automation level stays at 2 although the plan permits 3.
 - verified: bash scripts/test-retrieval-bench.sh — 14 checks, all pass, including six planted benchmark defects caught one at a time, a MISS reported rather than rounded up, an unanswerable question excluded from the aggregates rather than scored, a byte-identical vault after a run, and --validate against the live benchmark and live vault. All six suites pass: test-portability 42, test-schema 23, test-lint-governance 20, test-retrieval-bench 14, test-wiki-lint 11, test-baseline-metrics 8 (118 checks). verify-vault.sh all clear, 11 printed sections, exit 0. check-policy-sync.sh and check-command-pointers.sh clean after the phase bump and the new tool permission. One real bug found by running rather than reading: tab-separated records let bash read collapse adjacent tabs, so an empty expected_pages field shifted every later field left; records now use 0x1f. Evidence directory untouched — no modification to 20 tracked files, no content drift, all read-only. okf/ untouched.
 - note on the Claude Code guard: .claude/hooks/protect-raw.sh false-positived twice more this session on read-only work whose text merely mentioned the evidence directory (a sed on a command file, a heredoc writing docs/phase-5/status.md). Both were worked around by writing through python instead. Two more data points for open item 4 in docs/session-summary.md.
+
+## ingest-20261006-001
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/Agentic-AI.md
+- created: wiki/sources/Source - Agentic AI.md, wiki/concepts/Agentic AI.md, wiki/concepts/Asynchronous Programming.md
+- updated: n/a
+- notes: Ingested notes on Agentic AI characteristics, components, and async programming.
+
+## ingest-20261006-002
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/Langchain-Ecosystem.md
+- created: wiki/sources/Source - Langchain Ecosystem.md, wiki/concepts/LangSmith.md, wiki/concepts/LangServe.md, wiki/concepts/LangGraph.md
+- updated: n/a
+- notes: Ingested notes on the LangChain ecosystem components.
+
+## ingest-20261006-003
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/LangGraph.md
+- created: wiki/sources/Source - LangGraph.md, wiki/concepts/LangChain.md
+- updated: wiki/concepts/LangGraph.md
+- notes: Ingested detailed notes on LangGraph's capabilities vs LangChain.
+
+## ingest-20261006-004
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/Pydantic.md
+- created: wiki/sources/Source - Pydantic.md, wiki/concepts/Pydantic.md
+- updated: n/a
+- notes: Ingested notes on Pydantic data validation capabilities.
+
+## ingest-20261006-005
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/RAG.md
+- created: wiki/sources/Source - RAG.md, wiki/concepts/Retrieval-Augmented Generation.md
+- updated: n/a
+- notes: Ingested brief notes on the motivations for RAG.
+
+## ingest-20261006-006
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/Tools.md
+- created: wiki/sources/Source - Tools.md, wiki/concepts/Tool.md
+- updated: wiki/concepts/Agentic AI.md
+- notes: Ingested notes on AI agent Tools and tool calling workflow.
+
+## ingest-20261006-007
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/Python/File-IO.md
+- created: wiki/sources/Source - Python File IO.md, wiki/concepts/File IO (Python).md
+- updated: n/a
+- notes: Ingested fundamental notes on Python File I/O operations.
+
+## ingest-20261006-008
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/LangGraph/async_langgraph_issues_and_fixes.md
+- created: wiki/sources/Source - Async LangGraph Issues and Fixes.md, wiki/concepts/LangGraph Async Execution.md
+- updated: wiki/concepts/LangGraph.md
+- notes: Ingested async execution patterns and checkpointing fixes for LangGraph.
+
+## ingest-20261006-009
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/Python/Object-Oriented-Programming.md
+- created: wiki/sources/Source - Object Oriented Programming (Python).md, wiki/concepts/Object Oriented Programming (Python).md
+- updated: n/a
+- notes: Ingested fundamental OOP concepts in Python.
+
+## ingest-20261006-010
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/Python/Python.md
+- created: wiki/sources/Source - Python Fundamentals.md, wiki/concepts/Python (Programming Language).md
+- updated: wiki/concepts/File IO (Python).md, wiki/concepts/Object Oriented Programming (Python).md
+- notes: Ingested Python language fundamentals and control flow.
+
+## ingest-20261006-011
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/Python/Unit-Tests.md
+- created: wiki/sources/Source - Unit Tests.md, wiki/concepts/Unit Testing (Python).md
+- updated: n/a
+- notes: Ingested basic unit testing principle.
+
+## ingest-20261006-012
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/React/Hooks-Intro.md
+- created: wiki/sources/Source - React Hooks Intro.md, wiki/concepts/React Hooks.md
+- updated: n/a
+- notes: Ingested introduction to React Hooks and their architectural motivations.
+
+## ingest-20261006-013
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/React/useEffect-Hook.md
+- created: wiki/sources/Source - React useEffect Hook.md, wiki/concepts/useEffect (React).md
+- updated: wiki/concepts/React Hooks.md
+- notes: Ingested the `useEffect` Hook implementation and architectural patterns.
+
+## ingest-20261006-014
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/React/useState-Hook.md
+- created: wiki/sources/Source - React useState Hook.md, wiki/concepts/useState (React).md
+- updated: wiki/concepts/React Hooks.md
+- notes: Ingested the `useState` Hook implementation and structural patterns.
+
+## ingest-20261006-015
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/sbx-Sandbox/Agy-Sandbox.md
+- created: wiki/sources/Source - Antigravity Sandbox Setup.md, wiki/concepts/Antigravity Sandbox Isolation.md
+- updated: n/a
+- notes: Ingested architecture guidelines for isolating Antigravity CLI in a Docker sandbox.
+
+## ingest-20261006-016
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/sbx-Sandbox/Claude-Code-Sandbox.md
+- created: wiki/sources/Source - Claude Code Sandbox Setup.md, wiki/concepts/Claude Code Sandbox Execution.md
+- updated: n/a
+- notes: Ingested operational execution, UI dashboards, and declarative provisioning for Claude Code in a sandbox.
+
+## ingest-20261006-017
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/fnm-powershell-onedrive-troubleshooting.md
+- created: wiki/sources/Source - FNM Windows Troubleshooting.md, wiki/concepts/Fast Node Manager (FNM) Windows Initialization.md, wiki/concepts/npx Execution on Windows.md
+- updated: n/a
+- notes: Ingested FNM initialization mechanics and Windows npx wrapper execution differences.
+
+## ingest-20261006-018
+- date: 2026-10-06
+- operation: ingest
+- source: raw/notes/API.md
+- created: wiki/sources/Source - Application Programming Interfaces.md, wiki/concepts/Application Programming Interface (API).md
+- updated: n/a
+- notes: Ingested fundamental definition of APIs and the RESTful, resource-oriented paradigm.
