@@ -17,10 +17,13 @@ count() { grep -c . || true; }
 
 # Every wikilink as "<source file><TAB><target basename>".
 # Filenames contain spaces, so never pipe them through xargs — that bug shipped once already.
+# A trailing .md is dropped: Obsidian resolves [[x.md]] and [[x]] to the same note, and the
+# newer wiki/sources/ pages store raw_file with the extension. Keeping it made all 20 of them
+# report broken-link against files that exist (2026-10-23).
 link_graph() {
   notes | while IFS= read -r f; do
     grep -ho '\[\[[^]]*\]\]' "$f" 2>/dev/null |
-      sed -e 's/^\[\[//' -e 's/\]\]$//' -e 's/|.*$//' -e 's/#.*$//' -e 's#.*/##' |
+      sed -e 's/^\[\[//' -e 's/\]\]$//' -e 's/|.*$//' -e 's/#.*$//' -e 's#.*/##' -e 's/\.md$//' |
       while IFS= read -r t; do
         [ -n "$t" ] && printf '%s\t%s\n' "$f" "$t"
       done
@@ -29,6 +32,13 @@ link_graph() {
 
 # Page titles that exist, as basenames without .md.
 existing_titles() { notes | sed 's#.*/##; s#\.md$##' | sort -u; }
+
+# Non-note files a wikilink may legitimately target (images embedded with ![[x.png]]), as
+# basenames with their extension. Kept separate from existing_titles so attachments never count
+# as pages for duplicate, orphan, or benchmark purposes.
+existing_attachments() {
+  find wiki okf raw -type f ! -name '*.md' ! -name '.gitkeep' 2>/dev/null | sed 's#.*/##' | sort -u
+}
 
 # Frontmatter field value, or empty. Reads only the leading --- block.
 frontmatter() { # <file> <field>
@@ -80,17 +90,24 @@ acronym_of() { # <title>
 }
 
 # The source_id already recorded against a raw/ path by its wiki/sources/ page, if it has been
-# ingested. Matches by basename since raw_file is stored as a wikilink, e.g.
-# "[[raw/articles/x]]". Empty output means not ingested yet — nothing to compare against, and
-# that is fine: a brand-new source has no recorded hash to drift from.
+# ingested. raw_file is stored as a wikilink with or without the extension, e.g.
+# "[[raw/articles/x]]" or "[[raw/notes/Python/Python.md]]". Empty output means not ingested yet —
+# nothing to compare against, and that is fine: a brand-new source has no recorded hash to drift from.
+#
+# Exact path match, never substring. The earlier `*"$base"*` glob matched raw/notes/Python/Python.md
+# against raw/notes/Python/Object-Oriented-Programming.md (the folder carries the name) and
+# reported content drift on two untouched files in CI (2026-10-23). A drift check that compares
+# against the wrong record is worse than none: it trains the operator to ignore it.
 recorded_source_id() { # <raw-file-path>
-  local base="$1"
-  base=$(basename "$base"); base="${base%.md}"
-  local f
+  local want="${1#./}"; want="${want%.md}"
+  local f rf
   for f in wiki/sources/*.md; do
     [ -f "$f" ] || continue
-    case "$(frontmatter "$f" raw_file)" in
-      *"$base"*) frontmatter "$f" source_id; return ;;
-    esac
+    rf=$(frontmatter "$f" raw_file | tr -d '\r' |
+      sed -e 's/^["'\'']//' -e 's/["'\'']$//' -e 's/^\[\[//' -e 's/\]\]$//' -e 's/|.*$//' -e 's/\.md$//')
+    if [ "$rf" = "$want" ]; then
+      frontmatter "$f" source_id | tr -d '\r'
+      return
+    fi
   done
 }

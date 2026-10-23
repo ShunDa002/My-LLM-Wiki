@@ -12,6 +12,7 @@ report() { printf '%-28s %s\n' "$1" "$2"; findings=$((findings + 1)); }
 
 graph=$(link_graph)
 titles=$(existing_titles)
+attachments=$(existing_attachments)
 
 echo "WIKI LINT REPORT"
 echo "Vault: $(pwd)"
@@ -19,9 +20,12 @@ echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo none)"
 echo
 
 echo "-- broken links --"
+# A target is resolved when it names a note, or an attachment that exists (an embedded image).
 while IFS=$'\t' read -r src tgt; do
   [ -z "${tgt:-}" ] && continue
-  grep -qxF "$tgt" <<< "$titles" || report "broken-link" "$src -> [[$tgt]]"
+  grep -qxF "$tgt" <<< "$titles" && continue
+  grep -qxF "$tgt" <<< "$attachments" && continue
+  report "broken-link" "$src -> [[$tgt]]"
 done <<< "$graph"
 
 echo
@@ -34,14 +38,32 @@ done < <(wiki_pages)
 
 echo
 echo "-- duplicate concepts --"
-notes | sed 's#.*/##' | sort | uniq -d | while IFS= read -r d; do
-  [ -n "$d" ] && report "duplicate-filename" "$d appears in: $(notes | grep -F "/$d" | tr '\n' ' ')"
+# Scoped to wiki/ and okf/. raw/ is immutable evidence and can never be renamed, so a raw/ name
+# in these checks produced findings that could only ever be silenced, not fixed. The real risk a
+# raw/ name carries — link ambiguity — is reported separately below as an advisory note.
+knowledge_notes() { notes | grep -v '^raw/'; }
+knowledge_notes | sed 's#.*/##' | sort | uniq -d | while IFS= read -r d; do
+  [ -n "$d" ] && report "duplicate-filename" "$d appears in: $(knowledge_notes | grep -F "/$d" | tr '\n' ' ')"
 done
 # Case- and plural-insensitive near-duplicates, the ones a human eye slides past.
-notes | sed 's#.*/##; s#\.md$##' | tr 'A-Z' 'a-z' | sed 's/s$//' | sort | uniq -d |
+knowledge_notes | sed 's#.*/##; s#\.md$##' | tr 'A-Z' 'a-z' | sed 's/s$//' | sort | uniq -d |
   while IFS= read -r n; do
     [ -n "$n" ] && report "near-duplicate" "normalised title '$n' matches more than one page"
   done
+
+echo
+echo "-- raw evidence sharing a page name (advisory) --"
+# Not a finding: printed, never counted toward the exit status. The owner resolves it by renaming
+# the wiki/okf page (a human-only act) or accepting it. Why it matters at all: in Obsidian a bare
+# [[LangGraph]] is ambiguous when raw/notes/LangGraph/LangGraph.md and wiki/concepts/LangGraph.md
+# both exist, and may open the evidence instead of the concept. Same normalisation as above.
+raw_names=$(notes | grep '^raw/' | sed 's#.*/##; s#\.md$##' | tr 'A-Z' 'a-z' | sed 's/s$//' | sort -u)
+while IFS= read -r f; do
+  [ -n "$f" ] || continue
+  n=$(basename "$f" .md | tr 'A-Z' 'a-z' | sed 's/s$//')
+  grep -qxF "$n" <<< "$raw_names" &&
+    printf '%-28s %s\n' "note: raw-name-collision" "$f shares its name with a raw/ file — a bare [[link]] may resolve to evidence"
+done < <(knowledge_notes)
 
 echo
 echo "-- orphan pages --"
