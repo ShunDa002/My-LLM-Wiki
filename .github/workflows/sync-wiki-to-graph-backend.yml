@@ -1,0 +1,67 @@
+name: Sync wiki to wiki-graph-backend
+
+on:
+  push:
+    branches:
+      - main
+      - test
+    paths:
+      - "wiki/**"
+
+  workflow_dispatch:
+
+concurrency:
+  group: sync-wiki-to-graph-backend-test
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out My-LLM-Wiki
+        uses: actions/checkout@v4
+        with:
+          ref: test
+          path: source
+          persist-credentials: false
+
+      - name: Check out wiki-graph-backend test branch
+        uses: actions/checkout@v4
+        with:
+          repository: ShunDa002/wiki-graph-backend
+          ref: test
+          token: ${{ secrets.WIKI_GRAPH_BACKEND_TOKEN }}
+          path: destination
+
+      - name: Mirror wiki into data/source-repo/wiki
+        run: |
+          mkdir -p destination/data/source-repo/wiki
+
+          rsync -av --delete \
+            source/wiki/ \
+            destination/data/source-repo/wiki/
+
+      - name: Commit and push synchronized wiki
+        working-directory: destination
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add --all -- data/source-repo/wiki
+
+          if git diff --cached --quiet; then
+            echo "No changes to synchronize."
+            exit 0
+          fi
+
+          git commit \
+            -m "chore(data): sync wiki from My-LLM-Wiki" \
+            -m "Source commit: ${SOURCE_SHA}"
+
+          git push origin HEAD:test
