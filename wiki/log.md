@@ -1,7 +1,7 @@
 ---
 title: Operation Log
 type: log
-updated: 2026-08-30
+updated: 2026-11-03
 ---
 
 # Operation Log
@@ -344,3 +344,10 @@ Format:
 - limits: No page in wiki/, raw/, or okf/ was changed; rewriting the 20 raw_file values was the alternative and is a multi-page rewrite. The advisory note prints when wiki-lint.sh runs directly but verify-vault.sh shows lint output only on failure, so it is not surfaced there. Pre-existing and not changed: the duplicate checks report from inside a pipeline, so their findings print but never increment the counter or fail the run. On this Windows clone core.autocrlf=true with no .gitattributes checks raw/ out with CRLF, so a local verify-vault.sh reports drift on every ingested file; recorded source_ids are LF hashes, matching CI and the staged blobs the pre-commit hook hashes. Fixing that touches raw/ and is owner-only. core.hooksPath was found unset on this clone and set to .githooks before write work.
 - verified: In a fresh autocrlf=false clone of 245eea8 (CI-equivalent): before the patch, reproduced CI's exact drift failures; after, 26 of 26 ingested raw files resolve to their own source page with matching hashes (2 not yet ingested), wiki-lint "No findings" with 3 raw-name-collision notes, verify-vault.sh all clear, exit 0. All five suites pass: test-wiki-lint, test-portability, test-schema, test-lint-governance, test-baseline-metrics. Negative test: appending to raw/notes/Python/Python.md and raw/articles/01-markdown-first-retrieval.md (both raw_file forms) is still detected as drift. raw/ and okf/ untouched in the live vault.
 
+## ingest-20261103-001
+- date: 2026-11-03
+- operation: ingest
+- source: raw/notes/Spec-Kit.md
+- created: wiki/sources/Source - Spec Kit.md, wiki/concepts/Spec Kit.md
+- updated: n/a
+- notes: Ingested Spec Kit framework and Specification-Driven Development (SDD) core/quality-gate phases and workflow models.
